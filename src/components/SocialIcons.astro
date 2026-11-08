@@ -1,0 +1,55 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+
+interface Props {
+  class?: string;
+  size?: number;
+  padding?: string;
+}
+const { class: className, size = 25, padding = '0.25em' } = Astro.props;
+
+const links = [
+  { name: 'facebook', label: 'Facebook', href: site.social.facebook },
+  { name: 'instagram', label: 'Instagram', href: site.social.instagram },
+  { name: 'linkedin', label: 'Linkedin', href: site.social.linkedin },
+] as const;
+---
+
+<div class:list={['social', className]} style={`--icon-size:${size}px;--icon-padding:${padding}`}>
+  {
+    links.map((l) => (
+      <a class="social-icon" href={l.href ?? undefined} target="_blank" rel="noopener">
+        <span class="sr-only">{l.label}</span>
+        <Icon name={l.name} />
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .social {
+    display: flex;
+    align-items: center;
+  }
+  .social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--icon-size);
+    padding: var(--icon-padding);
+    width: calc(var(--icon-size) + 2 * var(--icon-padding));
+    height: calc(var(--icon-size) + 2 * var(--icon-padding));
+    color: var(--orange);
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  .social-icon:hover {
+    opacity: 0.9;
+  }
+  .social-icon :global(svg) {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    fill: var(--orange);
+  }
+</style>

@@ -1,0 +1,239 @@
+---
+import { site } from '../data/site';
+import ClientsCarousel from './ClientsCarousel.astro';
+import Icon from './Icon.astro';
+import SocialIcons from './SocialIcons.astro';
+---
+
+<footer class="site-footer">
+  <!-- Franja de atención por Whatsapp -->
+  <div class="wa-band bg-layer">
+    <div class="wa-box">
+      <span class="wa-icon"><Icon name="whatsapp" /></span>
+      <div class="wa-content">
+        <h3 class="wa-title">Atención vía Whatsapp</h3>
+        <p class="wa-number">{site.whatsapp.display}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-clients">
+    <ClientsCarousel />
+  </div>
+
+  <div class="footer-map">
+    <iframe
+      loading="lazy"
+      src={`https://maps.google.com/maps?q=${encodeURIComponent(site.mapQuery)}&t=m&z=16&output=embed&iwloc=near`}
+      title={site.mapQuery}
+      aria-label={site.mapQuery}></iframe>
+  </div>
+
+  <div class="footer-main">
+    <div class="boxed footer-grid">
+      <div class="f-col f-logo">
+        <a href="/"><img src="/images/logo-tecvol-blanco.png" alt="Tecvol" width="800" height="190" loading="lazy" /></a>
+      </div>
+      <div class="f-col">
+        <h2 class="f-heading">Dirección:</h2>
+        <p class="f-text">{site.address.map((line, i) => (i ? [<br />, line] : line))}</p>
+      </div>
+      <div class="f-col">
+        <h2 class="f-heading">Teléfono:</h2>
+        <p class="f-text">{site.phone}</p>
+        <h2 class="f-heading">Whatsapp:</h2>
+        <p class="f-text">{site.whatsapp.display}</p>
+      </div>
+      <div class="f-col">
+        <h2 class="f-heading">Email:</h2>
+        <p class="f-text"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+        <SocialIcons class="f-social" size={24} padding="0.1em" />
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="copyright">{site.copyright}</p>
+  </div>
+</footer>
+
+<style>
+  /* Franja Whatsapp */
+  .wa-band {
+    display: flex;
+    justify-content: center;
+    padding: 50px 0 60px;
+    background-color: var(--orange-soft);
+  }
+  .wa-band::before {
+    background-image: url('/images/whatsapp-fondo.jpg');
+    background-position: top left;
+    filter: saturate(0);
+    opacity: 0.15;
+    mix-blend-mode: multiply;
+  }
+  .wa-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #fff;
+  }
+  .wa-icon {
+    display: inline-flex;
+    font-size: 60px;
+    line-height: 1;
+  }
+  .wa-icon :global(svg) {
+    width: 60px;
+    height: 60px;
+    fill: #fff;
+  }
+  .wa-title {
+    margin: 0.5rem 0 -10px;
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #fff;
+  }
+  .wa-number {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 31px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #fff;
+  }
+
+  /* Clientes */
+  .footer-clients {
+    position: relative;
+    z-index: 15;
+    margin-top: -20px;
+    padding: 50px 0;
+    background-color: #fff;
+    box-shadow: 0 6px 50px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  /* Mapa */
+  .footer-map {
+    position: relative;
+    z-index: 16;
+    margin-top: -20px;
+    line-height: 0;
+    box-shadow: 0 6px 50px 0 rgba(0, 0, 0, 0.5);
+  }
+  .footer-map iframe {
+    display: block;
+    width: 100%;
+    height: 300px;
+    border: 0;
+  }
+
+  /* Datos de contacto */
+  .footer-main {
+    padding: 100px 0;
+    background-color: var(--dark);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 360fr 180fr 315fr 225fr;
+    column-gap: 20px;
+    align-items: start;
+  }
+  .f-logo img {
+    display: block;
+    width: 70%;
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+  .f-logo a:hover img {
+    opacity: 0.62;
+  }
+  .f-heading {
+    margin-bottom: 20px;
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  .f-text {
+    margin-bottom: calc(0.9rem + 20px);
+    font-family: var(--font);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    color: var(--orange);
+  }
+  .f-col > .f-text:last-child {
+    margin-bottom: 0.9rem;
+  }
+  .f-text a {
+    color: var(--orange);
+  }
+  .f-col :global(.f-social) {
+    margin: -25px -26px 0 0;
+  }
+
+  /* Línea final */
+  .footer-bottom {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 20px;
+    background-color: var(--dark);
+    border-top: 2px solid var(--orange);
+  }
+  .copyright {
+    margin: 20px 0 0.9rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--orange);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .copyright {
+      margin-left: 20px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .wa-box {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+    .footer-clients {
+      padding: 50px 30px;
+    }
+    .footer-main {
+      padding: 60px 0 100px;
+    }
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .f-logo {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .f-logo img {
+      display: inline-block;
+      width: 50%;
+      vertical-align: middle;
+    }
+    .f-col:not(.f-logo) {
+      margin-left: 60px;
+    }
+    .f-col:nth-child(3) {
+      margin-top: 18px;
+    }
+    .f-col:nth-child(4) {
+      margin-top: 0;
+    }
+    .f-col :global(.f-social) {
+      margin-right: 0;
+    }
+  }
+</style>

@@ -1,0 +1,517 @@
+---
+import Base from '../layouts/Base.astro';
+import ClientsCarousel from '../components/ClientsCarousel.astro';
+import Form, { type Field } from '../components/Form.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { gallery, services, whatsappUrl, works } from '../data/site';
+
+const contactFields: Field[] = [
+  { name: 'nombre', label: 'Tu nombre', type: 'text', required: true, half: true, autocomplete: 'name' },
+  { name: 'email', label: 'Tu mail', type: 'email', required: true, half: true, autocomplete: 'email' },
+  { name: 'telefono', label: 'Teléfono o Whatsapp', type: 'tel', required: true, autocomplete: 'tel' },
+  { name: 'consulta', label: 'Consulta', type: 'textarea' },
+];
+
+// Triángulos divisores (mismos trazos que Elementor)
+const triangleNegative = 'M500.2,94.7L0,0v100h1000V0L500.2,94.7z';
+const triangle = 'M500,98.9L0,6.1V0h1000v6.1L500,98.9z';
+---
+
+<Base title="Inicio - Tecvol" current="inicio">
+  <!-- Portada -->
+  <section class="hero">
+    <div class="hero-slide">
+      <div class="hero-inner">
+        <div class="hero-contents reveal" data-anim="fadeInUp">
+          <h1 class="hero-heading">Ingeniería eléctrica al servicio de la industria</h1>
+          <p class="hero-desc">Construcción de tableros y montajes eléctricos</p>
+          <a class="hero-btn" href={whatsappUrl} target="_blank" rel="noopener">Contactanos</a>
+        </div>
+      </div>
+    </div>
+    <div class="shape shape-bottom" style="--shape-h:65px">
+      <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path d={triangleNegative}></path></svg>
+    </div>
+  </section>
+
+  <!-- Clientes -->
+  <section class="clients-section" aria-label="Clientes">
+    <ClientsCarousel />
+  </section>
+
+  <!-- Sobre nosotros -->
+  <section id="nosotros" class="about bg-layer">
+    <div class="shape shape-top" style="--shape-h:70px">
+      <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path d={triangle}></path></svg>
+    </div>
+    <div class="shape shape-bottom" style="--shape-h:70px">
+      <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true"><path d={triangleNegative}></path></svg>
+    </div>
+
+    <div class="about-media">
+      <img src="/images/nosotros.jpg" alt="" width="1920" height="1508" fetchpriority="high" decoding="async" />
+    </div>
+    <div class="about-text">
+      <h2 class="kicker about-kicker reveal" data-anim="fadeInLeft">sobre</h2>
+      <h2 class="title-xl about-title reveal" data-anim="fadeInRight" data-delay="100">NOSOTROS</h2>
+      <div class="about-copy reveal" data-anim="fadeInUp" data-delay="200">
+        <p>
+          Somos una joven empresa marplatense creada en el año 2020 con el objetivo de prestar servicios de ingeniería
+          eléctrica, construcción de tableros eléctricos y montajes eléctricos navales e industriales.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Servicios -->
+  <section id="servicios" class="services">
+    <h2 class="title-xl services-title reveal" data-anim="fadeInUp">SERVICIOS</h2>
+    <div class="services-row">
+      {
+        services.map((s) => (
+          <div class="service">
+            <img class="service-img reveal" data-anim="fadeInUp" src={s.image} alt="" width="1300" height="629" loading="lazy" decoding="async" />
+            <h3 class="service-title reveal" data-anim="fadeInUp" data-delay="200">
+              {s.title}
+            </h3>
+            <div class="service-list copy-light reveal" data-anim="fadeInUp" data-delay="400">
+              <p>{s.items.map((item, i) => (i ? [<br />, item] : item))}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Obras -->
+  <section id="obras" class="works bg-layer">
+    <div class="works-text">
+      <h2 class="title-xl reveal" data-anim="fadeInLeft" data-delay="100">OBRAS</h2>
+      <h2 class="kicker works-kicker reveal" data-anim="fadeInLeft" data-delay="100">realizadas</h2>
+      <div class="works-list copy-light reveal" data-anim="fadeInUp" data-delay="400">
+        <p>{works.map((w, i) => (i ? [<br />, `● ${w}`] : `● ${w}`))}</p>
+      </div>
+    </div>
+    <div class="works-gallery">
+      {
+        gallery.map((g) => (
+          <a href={g.src} data-lightbox="obras" data-title={g.title}>
+            <img src={g.src} alt={g.title} width="1600" height="1066" loading="lazy" decoding="async" />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="contact">
+    <div class="contact-inner bg-layer">
+      <div class="boxed contact-grid">
+        <div class="contact-text">
+          <h2 class="kicker kicker-white reveal" data-anim="fadeInLeft">formulario de</h2>
+          <h2 class="title-xl title-white contact-title reveal" data-anim="fadeInLeft">CONTACTO</h2>
+          <p class="contact-copy reveal" data-anim="fadeInUp">Envianos tu mensaje y te responderemos a la brevedad.</p>
+        </div>
+        <div class="form-card reveal" data-anim="fadeInRight" data-delay="350">
+          <Form
+            action="/api/contacto"
+            fields={contactFields}
+            submitText="Enviar"
+            successText="Gracias por enviarnos tu mensaje. El mismo será respondido a la brevedad."
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Lightbox />
+</Base>
+
+<style>
+  .shape svg {
+    height: var(--shape-h);
+  }
+
+  /* ---------- Portada ---------- */
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-slide {
+    position: relative;
+    height: 1000px;
+    margin-top: -130px;
+    overflow: hidden;
+    background: url('/images/hero.jpg') center / cover no-repeat;
+  }
+  .hero-slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.32);
+  }
+  .hero-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 30px 0 0 383px;
+    text-align: left;
+  }
+  .hero-contents {
+    max-width: 66%;
+    color: #fff;
+    text-shadow: 0 0 48px rgba(0, 0, 0, 0.4);
+  }
+  .hero-heading {
+    margin-bottom: 7px;
+    font-family: var(--font);
+    font-size: 60px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .hero-desc {
+    margin: 0 0 25px;
+    font-family: var(--font);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 35px;
+  }
+  .hero-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    background: transparent;
+    color: #fff;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 15px;
+    text-shadow: none;
+    transition: all 0.3s;
+  }
+  .hero-btn:hover {
+    color: var(--orange);
+    background-color: #fff;
+    border-color: #fff;
+  }
+
+  /* ---------- Clientes ---------- */
+  .clients-section {
+    padding: 50px 0;
+  }
+
+  /* ---------- Sobre nosotros ---------- */
+  .about {
+    z-index: 3;
+    display: grid;
+    grid-template-columns: 49fr 51fr;
+    align-items: center;
+    column-gap: 20px;
+    padding: 150px 0 200px;
+    background-color: #fff;
+  }
+  .about::before {
+    background-image: url('/images/nosotros.jpg');
+    background-position: bottom center;
+    filter: saturate(0);
+    opacity: 0.1;
+  }
+  .about-media {
+    position: relative;
+    z-index: 4;
+  }
+  .about-media img {
+    display: block;
+    width: 100%;
+    border-radius: 0 30px 30px 0;
+    box-shadow: 7px 11px 25px -3px rgba(0, 0, 0, 0.29);
+  }
+  .about-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding-left: 50px;
+  }
+  .about-kicker {
+    position: relative;
+    z-index: 0;
+    margin-left: -150px;
+    padding: 5px 5px 5px 150px;
+    background-color: #fff;
+    border-radius: 10px;
+  }
+  .about-title {
+    margin-top: -20px;
+  }
+  .about-copy {
+    padding-right: 100px;
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--gray);
+  }
+
+  /* ---------- Servicios ---------- */
+  .services {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 150px;
+  }
+  .services-title {
+    margin: 150px 0 50px;
+  }
+  .services-row {
+    display: flex;
+    width: 90%;
+    padding: 10px;
+  }
+  .service {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+  }
+  .service-img {
+    display: block;
+    width: 74%;
+    margin-inline: auto;
+    border-radius: 5px;
+  }
+  .service-title {
+    align-self: center;
+    margin: 20px 0;
+    text-align: center;
+    font-family: var(--font);
+    font-size: 26px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+  .service-list {
+    align-self: center;
+  }
+
+  /* ---------- Obras ---------- */
+  .works {
+    z-index: 5;
+    display: flex;
+    background-color: #f0f0f0;
+    box-shadow: 0 3px 100px 15px rgba(0, 0, 0, 0.35);
+  }
+  .works::before {
+    background-image: url('/images/obras-fondo.jpg');
+    background-position: center center;
+    filter: saturate(0);
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+  }
+  .works-text {
+    width: 50%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 50px 10px 100px;
+  }
+  .works-kicker {
+    margin-top: -29px;
+  }
+  .works-list {
+    align-self: flex-start;
+  }
+  .works-gallery {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .works-gallery a,
+  .works-gallery img {
+    display: block;
+  }
+  .works-gallery img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- Contacto ---------- */
+  .contact {
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px;
+  }
+  .contact-inner {
+    z-index: 3;
+    margin-top: -127px;
+    padding: 250px 0 150px;
+    background-color: #000;
+  }
+  .contact-inner::before {
+    background-image: url('/images/contacto-fondo.jpg');
+    background-position: center center;
+    opacity: 0.71;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 555fr 565fr;
+    align-items: center;
+    column-gap: 20px;
+  }
+  .contact-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 10px;
+  }
+  .kicker-white,
+  .title-white {
+    color: #fff;
+  }
+  .contact-title {
+    margin-top: -25px;
+  }
+  .contact-copy {
+    margin: 0 0 0.9rem;
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #fff;
+  }
+  .form-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.878);
+  }
+
+  /* ---------- Celular ---------- */
+  @media (max-width: 767px) {
+    .hero {
+      margin-top: -65px;
+    }
+    .hero-slide {
+      height: 650px;
+    }
+    .hero-inner {
+      padding: 130px 0 0 20px;
+    }
+    .hero-contents {
+      max-width: 100%;
+    }
+    .hero-heading {
+      font-size: 12px;
+    }
+    .hero-desc {
+      font-size: 31px;
+      line-height: 0.9em;
+    }
+
+    .clients-section {
+      padding: 50px 30px;
+    }
+
+    .about {
+      grid-template-columns: 1fr;
+      row-gap: 20px;
+      padding: 100px 0;
+    }
+    .about::before {
+      background-position: center left;
+    }
+    .about-media img {
+      border-radius: 0;
+    }
+    .about-text {
+      padding: 27px 40px 0;
+    }
+    .about-title {
+      margin-top: -21px;
+    }
+    .about-copy {
+      padding: 0;
+      font-size: 16px;
+    }
+
+    .services {
+      padding: 30px 0 0;
+    }
+    .services-title {
+      margin: 20px 0 40px;
+    }
+    .services-row {
+      width: 100%;
+      flex-direction: column;
+    }
+    .service-img {
+      width: 100%;
+    }
+    .service-title {
+      margin: 0;
+      font-size: 25px;
+    }
+    .service-list {
+      padding-bottom: 40px;
+    }
+
+    .works {
+      flex-direction: column;
+      padding-top: 100px;
+    }
+    .works::before {
+      background-position: -800px -180px;
+    }
+    .works-text {
+      width: 100%;
+      padding: 0 15px;
+    }
+    .works-text .title-xl {
+      margin-top: -26px;
+    }
+    .works-list {
+      padding-bottom: 40px;
+    }
+    .works-gallery {
+      width: 100%;
+      grid-template-columns: 1fr;
+    }
+
+    .contact {
+      padding-top: 0;
+    }
+    .contact-inner {
+      margin-top: -206px;
+      padding: 250px 20px 100px;
+    }
+    .contact-grid {
+      grid-template-columns: 1fr;
+      row-gap: 20px;
+    }
+    .contact-text {
+      margin-top: 30px;
+      padding: 0;
+    }
+    .contact-title {
+      margin-top: -20px;
+    }
+    .contact-copy {
+      font-size: 15px;
+      line-height: 1.1em;
+    }
+    .form-card {
+      padding: 10px 15px;
+    }
+  }
+</style>

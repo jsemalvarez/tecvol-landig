@@ -1,0 +1,416 @@
+---
+// Formulario con el mismo aspecto que el de la página original (Elfsight).
+// Envía los datos a un endpoint propio (/api/...) que manda el mail.
+
+export interface Field {
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'tel' | 'textarea' | 'file';
+  required?: boolean;
+  half?: boolean;
+  description?: string;
+  accept?: string;
+  autocomplete?: string;
+}
+
+interface Props {
+  action: string;
+  fields: Field[];
+  submitText: string;
+  successText: string;
+  maxFileMb?: number;
+}
+
+const { action, fields, submitText, successText, maxFileMb = 4 } = Astro.props;
+const uid = action.replace(/\W+/g, '-');
+---
+
+<form class="ef-form" action={action} method="post" enctype="multipart/form-data" novalidate data-form data-max-file-mb={maxFileMb}>
+  <div class="ef-fieldset">
+    {
+      fields.map((f) => {
+        const id = `${uid}-${f.name}`;
+        return (
+          <div class:list={['ef-field', { 'ef-half': f.half }]} data-field={f.name}>
+            <label class="ef-label" for={id}>
+              {f.label}
+              {f.required && <span class="ef-req"> *</span>}
+            </label>
+            {f.description && <div class="ef-description">{f.description}</div>}
+            {f.type === 'textarea' ? (
+              <textarea class="ef-input ef-textarea" id={id} name={f.name} required={f.required} />
+            ) : f.type === 'file' ? (
+              <label class="ef-file" for={id} data-dropzone>
+                <input class="ef-file-input" type="file" id={id} name={f.name} accept={f.accept} required={f.required} />
+                <span class="ef-file-empty">
+                  <span class="ef-file-link">Elegir archivo</span> o arrastrar y soltar aquí
+                </span>
+                <span class="ef-file-name" hidden />
+              </label>
+            ) : (
+              <input class="ef-input" type={f.type} id={id} name={f.name} required={f.required} autocomplete={f.autocomplete} />
+            )}
+            <div class="ef-error" aria-live="polite" />
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <!-- Campo trampa para bots: las personas no lo ven -->
+  <div class="ef-hp" aria-hidden="true">
+    <label>No completar <input type="text" name="empresa_web" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="ef-message" role="alert" hidden></div>
+
+  <div class="ef-actions">
+    <button class="ef-button" type="submit">
+      <span class="ef-button-label">{submitText}</span>
+      <span class="ef-loader" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="ef-success" hidden>
+    <div class="ef-success-inner">
+      <p class="ef-success-text">{successText}</p>
+      <button class="ef-success-button" type="button">¡Gracias!</button>
+    </div>
+  </div>
+</form>
+
+<style>
+  .ef-form {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+    margin-inline: auto;
+    font-family: var(--font-system);
+    font-size: 15px;
+    line-height: 19.5px;
+    color: #333;
+  }
+  .ef-fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    margin: 0 -10px 20px;
+  }
+  .ef-field {
+    width: 100%;
+    padding: 0 10px;
+    margin-bottom: 20px;
+  }
+  .ef-half {
+    width: 50%;
+  }
+  .ef-label {
+    display: block;
+    margin: 20px 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+  }
+  .ef-description {
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .ef-input {
+    display: block;
+    width: 100%;
+    height: 52px;
+    padding: 16px;
+    margin: 0;
+    font: inherit;
+    font-size: 15px;
+    line-height: 20px;
+    color: #333;
+    background: transparent;
+    border: 1px solid rgba(153, 153, 153, 0.4);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .ef-textarea {
+    height: 85px;
+    line-height: 18px;
+    resize: none;
+  }
+  .ef-actions {
+    margin-bottom: 20px;
+  }
+  .ef-input:focus,
+  .ef-file:focus-within {
+    border-color: var(--orange-soft);
+  }
+
+  .ef-file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 16px;
+    text-align: center;
+    border: 1px dashed rgba(153, 153, 153, 0.4);
+    border-radius: 2px;
+    color: rgba(51, 51, 51, 0.7);
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .ef-file.is-dragover {
+    border-color: var(--orange-soft);
+    background-color: rgba(253, 158, 82, 0.08);
+  }
+  .ef-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .ef-file-link {
+    color: var(--orange-soft);
+    text-decoration: underline;
+    margin-right: 4px;
+  }
+  .ef-file-name {
+    color: #333;
+    word-break: break-all;
+  }
+
+  .ef-field.has-error .ef-input,
+  .ef-field.has-error .ef-file {
+    border-color: #e74c3c;
+  }
+  .ef-error {
+    color: #e74c3c;
+    font-size: 13px;
+    line-height: 18px;
+  }
+  .ef-error:not(:empty) {
+    margin-top: 6px;
+  }
+  .ef-message {
+    margin: -20px 0 20px;
+    color: #e74c3c;
+    font-size: 14px;
+  }
+
+  .ef-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .ef-button {
+    position: relative;
+    display: inline-block;
+    padding: 13px 32px;
+    border: 0;
+    border-radius: 4px;
+    background-color: var(--orange-soft);
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 18px;
+    cursor: pointer;
+    transition: filter 0.2s;
+  }
+  .ef-button:hover {
+    filter: brightness(0.95);
+  }
+  .ef-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    opacity: 0;
+  }
+  .ef-form.is-loading .ef-button {
+    pointer-events: none;
+  }
+  .ef-form.is-loading .ef-button-label {
+    opacity: 0;
+  }
+  .ef-form.is-loading .ef-loader {
+    opacity: 1;
+    animation: ef-spin 0.8s linear infinite;
+  }
+  @keyframes ef-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ef-success {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .ef-success[hidden] {
+    display: none;
+  }
+  .ef-form.is-success .ef-fieldset,
+  .ef-form.is-success .ef-actions,
+  .ef-form.is-success .ef-message {
+    visibility: hidden;
+  }
+  .ef-success-text {
+    margin: 0;
+    padding: 0 24px;
+    font-size: 16px;
+    line-height: 20.8px;
+  }
+  .ef-success-button {
+    margin-top: 28px;
+    padding: 11px 24px;
+    border: 0;
+    border-radius: 2px;
+    background-color: var(--orange-soft);
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 18px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 767px) {
+    .ef-half {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const MSG = {
+    required: 'Campo obligatorio',
+    email: 'Mail inválido',
+    phone: 'Teléfono inválido',
+    fileType: 'Extensión de archivo no permitida',
+    fileSize: 'Tamaño de archivo excede el límite permitido',
+    allRequired: 'Por favor completar todos los campos requeridos',
+    unknown: 'Error desconocido. Por favor intentá de nuevo o escribinos por Whatsapp.',
+  };
+
+  document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    const maxBytes = Number(form.dataset.maxFileMb || 4) * 1024 * 1024;
+    const message = form.querySelector<HTMLElement>('.ef-message')!;
+    const success = form.querySelector<HTMLElement>('.ef-success')!;
+
+    const setError = (field: HTMLElement, text: string) => {
+      field.classList.toggle('has-error', !!text);
+      const el = field.querySelector('.ef-error');
+      if (el) el.textContent = text;
+    };
+
+    const validateField = (field: HTMLElement): boolean => {
+      const input = field.querySelector<HTMLInputElement | HTMLTextAreaElement>('input:not([type=hidden]), textarea');
+      if (!input) return true;
+      let error = '';
+      if (input instanceof HTMLInputElement && input.type === 'file') {
+        const file = input.files?.[0];
+        const allowed = (input.accept || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+        if (!file) {
+          if (input.required) error = MSG.required;
+        } else if (allowed.length && !allowed.some((ext) => file.name.toLowerCase().endsWith(ext))) {
+          error = MSG.fileType;
+        } else if (file.size > maxBytes) {
+          error = MSG.fileSize;
+        }
+      } else {
+        const value = input.value.trim();
+        if (!value) {
+          if (input.required) error = MSG.required;
+        } else if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = MSG.email;
+        } else if (input.type === 'tel' && (value.replace(/\D/g, '').length < 6 || /[^\d\s+()\-.]/.test(value))) {
+          error = MSG.phone;
+        }
+      }
+      setError(field, error);
+      return !error;
+    };
+
+    form.querySelectorAll<HTMLElement>('.ef-field').forEach((field) => {
+      field.querySelectorAll('input, textarea').forEach((input) => {
+        input.addEventListener('input', () => field.classList.contains('has-error') && validateField(field));
+        input.addEventListener('change', () => field.classList.contains('has-error') && validateField(field));
+      });
+    });
+
+    // Campo de archivo: muestra el nombre elegido y permite arrastrar y soltar
+    form.querySelectorAll<HTMLElement>('[data-dropzone]').forEach((zone) => {
+      const input = zone.querySelector<HTMLInputElement>('input[type=file]')!;
+      const empty = zone.querySelector<HTMLElement>('.ef-file-empty')!;
+      const name = zone.querySelector<HTMLElement>('.ef-file-name')!;
+      const refresh = () => {
+        const file = input.files?.[0];
+        empty.hidden = !!file;
+        name.hidden = !file;
+        name.textContent = file ? file.name : '';
+      };
+      input.addEventListener('change', refresh);
+      zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('is-dragover');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('is-dragover'));
+      zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('is-dragover');
+        if (e.dataTransfer?.files.length) {
+          input.files = e.dataTransfer.files;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+      form.addEventListener('reset', () => setTimeout(refresh));
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      message.hidden = true;
+      const fields = [...form.querySelectorAll<HTMLElement>('.ef-field')];
+      const results = fields.map(validateField);
+      if (results.includes(false)) {
+        message.textContent = MSG.allRequired;
+        message.hidden = false;
+        return;
+      }
+
+      form.classList.add('is-loading');
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) throw new Error(data.error || MSG.unknown);
+        form.classList.add('is-success');
+        success.hidden = false;
+      } catch (err) {
+        message.textContent = err instanceof Error && err.message ? err.message : MSG.unknown;
+        message.hidden = false;
+      } finally {
+        form.classList.remove('is-loading');
+      }
+    });
+
+    form.querySelector('.ef-success-button')?.addEventListener('click', () => {
+      form.reset();
+      form.querySelectorAll<HTMLElement>('.ef-field').forEach((f) => setError(f, ''));
+      form.classList.remove('is-success');
+      success.hidden = true;
+    });
+  });
+</script>

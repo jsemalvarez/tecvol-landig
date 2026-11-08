@@ -1,0 +1,232 @@
+/* Estilos globales. Valores tomados de la página original (Elementor). */
+
+:root {
+  --orange: #ff8929;
+  --orange-soft: #fd9e52;
+  --gray: #727577;
+  --gray-heading: #656565;
+  --dark: #242525;
+  --text: #333333;
+  --font: 'Sora', sans-serif;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --header-h: 113px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-h);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-system);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+/* Evita que las animaciones laterales generen scroll horizontal */
+main,
+footer {
+  overflow-x: clip;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+p {
+  margin-block: 0 0.9rem;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Contenedor de ancho fijo (Elementor "boxed": 1140px) */
+.boxed {
+  width: 100%;
+  max-width: 1140px;
+  margin-inline: auto;
+}
+
+/* Fondos con imagen + capa de color (imitan los ::before de Elementor) */
+.bg-layer {
+  position: relative;
+  isolation: isolate;
+}
+.bg-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
+}
+
+/* Divisores triangulares entre secciones */
+.shape {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  direction: ltr;
+  pointer-events: none;
+  z-index: 2;
+}
+.shape svg {
+  display: block;
+  width: calc(100% + 1.3px);
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.shape path {
+  fill: #fff;
+}
+.shape-top {
+  top: -1px;
+}
+.shape-bottom {
+  bottom: -1px;
+}
+
+/* Animaciones de entrada (equivalentes a las de Elementor) */
+.reveal {
+  visibility: hidden;
+}
+.reveal.is-visible {
+  visibility: visible;
+  animation-duration: 1.25s;
+  animation-fill-mode: both;
+}
+.reveal.is-visible[data-anim='fadeInUp'] {
+  animation-name: fadeInUp;
+}
+.reveal.is-visible[data-anim='fadeInLeft'] {
+  animation-name: fadeInLeft;
+}
+.reveal.is-visible[data-anim='fadeInRight'] {
+  animation-name: fadeInRight;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    visibility: visible;
+  }
+  .reveal.is-visible {
+    animation: none !important;
+  }
+}
+
+/* Títulos de sección con la fórmula "chico + GRANDE" */
+.kicker {
+  font-family: var(--font);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--gray);
+}
+.title-xl {
+  font-family: var(--font);
+  font-size: 60px;
+  font-weight: 800;
+  color: var(--orange);
+}
+.copy-light {
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 24px;
+  color: var(--gray);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-h: 130px;
+  }
+  .kicker {
+    font-size: 25px;
+  }
+  .title-xl {
+    font-size: 40px;
+  }
+  .copy-light {
+    font-size: 12px;
+    line-height: 1.7em;
+  }
+}

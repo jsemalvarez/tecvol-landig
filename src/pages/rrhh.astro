@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import Form, { type Field } from '../components/Form.astro';
+
+const cvFields: Field[] = [
+  { name: 'nombre', label: 'Tu nombre', type: 'text', required: true, half: true, autocomplete: 'name' },
+  { name: 'email', label: 'Tu mail', type: 'email', required: true, half: true, autocomplete: 'email' },
+  { name: 'telefono', label: 'Teléfono o Whatsapp', type: 'tel', required: true, autocomplete: 'tel' },
+  {
+    name: 'cv',
+    label: 'Cargá tu CV',
+    type: 'file',
+    required: true,
+    description: 'Se admiten archivos .pdf, .doc, .docx y .jpg',
+    accept: '.pdf,.doc,.docx,.jpg,.jpeg',
+  },
+];
+---
+
+<Base title="RRHH - Tecvol" current="rrhh">
+  <section class="rrhh bg-layer">
+    <div class="boxed rrhh-grid">
+      <div class="rrhh-text">
+        <h2 class="kicker kicker-white">trabajá con</h2>
+        <h1 class="title-xl title-white rrhh-title">NOSOTROS</h1>
+        <p class="rrhh-copy">
+          Si sos Técnico Electricista, Técnico Electromecánico o Ingeniero Electricista envíanos tu currículum y lo
+          consideraremos en futuras búsquedas de personal.
+        </p>
+      </div>
+      <div class="form-card">
+        <Form
+          action="/api/rrhh"
+          fields={cvFields}
+          submitText="Finalizar carga de CV"
+          successText="Gracias por enviarnos tu CV. El mismo será analizado y tenido en consideración para nuestras búsquedas de personal."
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .rrhh {
+    z-index: 3;
+    margin-top: -127px;
+    padding: 250px 0 400px;
+    background-color: #000;
+  }
+  .rrhh::before {
+    background-image: url('/images/rrhh-fondo.jpg');
+    background-position: center center;
+    opacity: 0.71;
+  }
+  .rrhh-grid {
+    display: grid;
+    grid-template-columns: 555fr 565fr;
+    align-items: center;
+    column-gap: 20px;
+  }
+  .rrhh-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 10px;
+  }
+  .kicker-white,
+  .title-white {
+    color: #fff;
+  }
+  .rrhh-title {
+    margin-top: -25px;
+  }
+  .rrhh-copy {
+    margin: 0 0 0.9rem;
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 200;
+    line-height: 24px;
+    color: #fff;
+  }
+  .form-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.878);
+  }
+
+  @media (max-width: 767px) {
+    .rrhh {
+      margin-top: -206px;
+      padding: 250px 30px 150px;
+    }
+    .rrhh-grid {
+      grid-template-columns: 1fr;
+      row-gap: 20px;
+    }
+    .rrhh-title {
+      margin-top: -26px;
+    }
+    .rrhh-copy {
+      font-size: 15px;
+      line-height: 1.1em;
+    }
+    .form-card {
+      padding: 0 20px;
+    }
+  }
+</style>

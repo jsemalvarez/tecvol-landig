@@ -1,0 +1,108 @@
+---
+// Bloque "Confían en Tecvol": carrusel de logos que avanza solo cada 5 segundos.
+import { clients } from '../data/site';
+---
+
+<div class="clients">
+  <h2 class="clients-title">Confían en Tecvol</h2>
+  <div class="carousel" data-carousel aria-roledescription="carrusel">
+    <div class="carousel-track" data-track>
+      {
+        [...clients, ...clients].map((c, i) => (
+          <figure class="carousel-slide" aria-hidden={i >= clients.length ? 'true' : undefined}>
+            <img src={c.src} alt={`Logo ${c.name}`} width="925" height="212" loading="lazy" decoding="async" />
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .clients-title {
+    text-align: center;
+    color: var(--gray-heading);
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 24px;
+  }
+  .carousel {
+    --per-view: 5;
+    --gap: 32px;
+    margin: 70px 100px 50px;
+    overflow: hidden;
+  }
+  .carousel-track {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    transition: transform 0.5s ease;
+    will-change: transform;
+  }
+  .carousel-slide {
+    flex: 0 0 calc((100% - (var(--per-view) - 1) * var(--gap)) / var(--per-view));
+    margin: 0;
+    text-align: center;
+  }
+  .carousel-slide img {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 1024px) {
+    .carousel {
+      --per-view: 2;
+    }
+  }
+  @media (max-width: 767px) {
+    .clients-title {
+      font-size: 15px;
+      line-height: 1.1em;
+    }
+    .carousel {
+      --per-view: 1;
+      margin: 20px 0 0;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector<HTMLElement>('[data-track]');
+    if (!track) return;
+    const total = track.children.length / 2; // la segunda mitad son copias para el giro infinito
+    let index = 0;
+    let paused = false;
+
+    const step = () => {
+      const first = track.children[0] as HTMLElement;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return first.getBoundingClientRect().width + gap;
+    };
+    const go = (animate: boolean) => {
+      track.style.transition = animate ? '' : 'none';
+      track.style.transform = `translateX(${-index * step()}px)`;
+    };
+
+    track.addEventListener('transitionend', () => {
+      if (index >= total) {
+        index = 0;
+        go(false);
+      }
+    });
+
+    carousel.addEventListener('mouseenter', () => (paused = true));
+    carousel.addEventListener('mouseleave', () => (paused = false));
+    window.addEventListener('resize', () => go(false));
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setInterval(() => {
+      if (paused || document.hidden) return;
+      index += 1;
+      go(true);
+    }, 5000);
+  });
+</script>

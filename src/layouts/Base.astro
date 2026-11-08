@@ -1,0 +1,150 @@
+---
+import '@fontsource/sora/200.css';
+import '@fontsource/sora/300.css';
+import '@fontsource/sora/400.css';
+import '@fontsource/sora/500.css';
+import '@fontsource/sora/600.css';
+import '@fontsource/sora/800.css';
+import '@fontsource/inter/400.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { site, whatsappUrl } from '../data/site';
+
+interface Props {
+  title: string;
+  current: 'inicio' | 'rrhh';
+  description?: string;
+}
+
+const { title, current, description = site.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogImage = new URL('/images/og-tecvol.png', site.url).href;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': ['Electrician', 'Organization'],
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  url: site.url,
+  logo: ogImage,
+  image: ogImage,
+  email: site.email,
+  telephone: site.phone,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address[0],
+    addressLocality: site.address[1],
+    addressCountry: 'AR',
+  },
+  openingHours: ['Mo,Tu,We,Th,Fr,Sa,Su 09:00-17:00'],
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large" />
+
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="656" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="icon" href="/favicon-192.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ff8929" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <noscript><style>.reveal { visibility: visible !important; }</style></noscript>
+  </head>
+  <body>
+    <Header current={current} />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer />
+
+    <a class="wa-float" href={whatsappUrl} target="_blank" rel="noopener" aria-label="Escribinos por Whatsapp">
+      <Icon name="whatsapp" />
+    </a>
+
+    <style>
+      .wa-float {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #25d366;
+        box-shadow: 1px 6px 24px 0 rgba(7, 94, 84, 0.24);
+        opacity: 0;
+        transform: scale(0.5);
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      }
+      .wa-float.is-shown {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+      .wa-float:hover {
+        filter: brightness(1.05);
+      }
+      .wa-float :global(svg) {
+        width: 34px;
+        height: 34px;
+        fill: #fff;
+      }
+      @media (max-width: 767px) {
+        .wa-float {
+          right: 14px;
+          bottom: 14px;
+        }
+      }
+    </style>
+
+    <script>
+      // Botón flotante de Whatsapp: aparece a los 3 segundos, como en la página original.
+      setTimeout(() => document.querySelector('.wa-float')?.classList.add('is-shown'), 3000);
+
+      // Animaciones de entrada al hacer scroll.
+      const items = document.querySelectorAll<HTMLElement>('.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            observer.unobserve(el);
+            setTimeout(() => el.classList.add('is-visible'), Number(el.dataset.delay || 0));
+          });
+        });
+        items.forEach((el) => observer.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>
