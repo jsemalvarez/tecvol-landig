@@ -9,6 +9,15 @@ export default defineConfig({
   adapter: vercel(),
   trailingSlash: 'ignore',
   devToolbar: { enabled: false },
+  // Dominios desde los que se sirve el sitio. Sin esta lista, en Vercel Astro toma
+  // "localhost" como dirección propia y rechaza los envíos de los formularios (403).
+  security: {
+    allowedDomains: [
+      { hostname: 'tecvol.com.ar' },
+      { hostname: 'www.tecvol.com.ar' },
+      { hostname: '*.vercel.app' },
+    ],
+  },
   env: {
     schema: {
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
